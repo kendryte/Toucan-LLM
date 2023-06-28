@@ -12,7 +12,7 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 torchrun --nproc_per_node=4 --master_port=8080 trai
     --evaluation_strategy "no" \
     --save_strategy "steps" \
     --save_steps 2000 \
-    --save_total_limit 1 \
+    --save_total_limit 2 \
     --learning_rate 8e-6 \
     --weight_decay 0. \
     --warmup_ratio 0.03 \

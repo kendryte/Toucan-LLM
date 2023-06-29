@@ -106,9 +106,12 @@ belle数据：[belle_cn](https://huggingface.co/datasets/BelleGroup/train_2M_CN)
 
 #### 模型训练
 
-模型全参数微调+deepspeed, 训练启动的脚本在train/run.sh，可根据情况修改参数
+模型全参数微调+deepspeed, 训练启动的脚本在train/run.sh，可根据情况修改参数  
+```
 bash train/run.sh
+```
 
+```
 torchrun --nproc_per_node=4 --master_port=8080 train.py \
     --model_name_or_path llama_to_hf_path \
     --data_path data_path \
@@ -127,6 +130,7 @@ torchrun --nproc_per_node=4 --master_port=8080 train.py \
     --warmup_ratio 0.03 \
     --deepspeed "./configs/default_offload_opt_param.json" \
     --tf32 True
+```
 
 ——model_name_or_path 代表预训练模型，llama模型为hugging face格式  
 ——train_file 代表训练数据  

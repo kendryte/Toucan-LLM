@@ -98,7 +98,7 @@ pip install -r train/requirements.txt
 
 #### 数据准备
 
-训练主要使用开源数据：
+训练主要使用开源数据：  
 alpaca_gpt4_data.json  
 alpaca_gpt4_data_zh.json  
 belle数据：[belle_cn](https://huggingface.co/datasets/BelleGroup/train_2M_CN)  

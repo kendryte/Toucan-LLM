@@ -3,47 +3,13 @@ import sys
 import torch
 import transformers
 import json
-
+import argparse
 from transformers import LlamaTokenizer, LlamaForCausalLM, GenerationConfig
 from My_Quant import My_Quant, My_QuantModule, My_MatMul
 import llama_4bit as llama
 
 
-model_path="/data/xuchengzhen/llama/llama7B-p50k-2/checkpoint-9252/"
-tokenizer = LlamaTokenizer.from_pretrained(model_path)
 
-LOAD_8BIT = False
-BASE_MODEL = model_path
-
-if torch.cuda.is_available():
-    device = "cuda"
-else:
-    device = "cpu"
-
-try:
-    if torch.backends.mps.is_available():
-        device = "mps"
-except:
-    pass
-
-if device == "cuda":
-    model = LlamaForCausalLM.from_pretrained(
-        BASE_MODEL,
-        load_in_8bit=LOAD_8BIT,
-        torch_dtype=torch.float16,
-        device_map="auto",
-    )
-else:
-    model = LlamaForCausalLM.from_pretrained(
-        BASE_MODEL, device_map={"": device}, low_cpu_mem_usage=True
-    )
-    model = PeftModel.from_pretrained(
-        model,
-        LORA_WEIGHTS,
-        device_map={"": device},
-    )
-
-import ipdb; ipdb.set_trace()
 def generate_prompt(instruction, input=None):
     if input:
         return f"""Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.
@@ -63,10 +29,7 @@ def generate_prompt(instruction, input=None):
 
 ### Response:"""
 
-if not LOAD_8BIT:
-    model.half()  # seems to fix bugs for some users.
 
-model.eval()
 if torch.__version__ >= "2" and sys.platform != "win32":
     model = torch.compile(model)
 
@@ -133,17 +96,67 @@ def evaluate(
     output = tokenizer.decode(s)
     return output.split("### Response:")[1].strip()
 
-# Old testing code follows.
+
 
 if __name__ == "__main__":
+    # demo scripts for 4 bits weight quantization and fp16 activation
+    # python llama7b_generate_quant.py llama_model_path  cal_dataset_json)path
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('model', type=str, help='llama model to load')
+    parser.add_argument('cal_dataset', type=str, help='json file for data calibration')
+    parser.add_argument('--wbits', type=int, default=4, choices=[2, 3, 4, 8, 16], help='#bits to use for quantization; use 16 for evaluating base model.')
+    parser.add_argument('--save_dir', type=str, default="./llama_4bit/pytorch_model_4bit.pt", help='quantized pt file')
+
+
+    args = parser.parse_args()
     # testing code for readme
     res=[]
     instructions=[]
-    with open('./belle_eval.json') as json_file:
+    with open(args.cal_dataset) as json_file:
         json_list = list(json_file)
     for json_str in json_list:
         result = json.loads(json_str)
         instructions.append(result['question'])
+
+    tokenizer = LlamaTokenizer.from_pretrained(args.model)
+
+    LOAD_8BIT = False
+
+    if torch.cuda.is_available():
+        device = "cuda"
+    else:
+        device = "cpu"
+
+    try:
+        if torch.backends.mps.is_available():
+            device = "mps"
+    except:
+        pass
+
+    if device == "cuda":
+        model = LlamaForCausalLM.from_pretrained(
+            args.model,
+            load_in_8bit=LOAD_8BIT,
+            torch_dtype=torch.float16,
+            device_map="auto",
+        )
+    else:
+        model = LlamaForCausalLM.from_pretrained(
+            BASE_MODEL, device_map={"": device}, low_cpu_mem_usage=True
+        )
+        model = PeftModel.from_pretrained(
+            model,
+            LORA_WEIGHTS,
+            device_map={"": device},
+        )
+
+    if not LOAD_8BIT:
+        model.half()  # seems to fix bugs for some users.
+
+    model.eval()
+
 
     configuration = llama.LlamaConfig(vocab_size=49954,
                                     hidden_size=4096,
@@ -162,12 +175,12 @@ if __name__ == "__main__":
     model_4bit = llama.LlamaForCausalLM(configuration)
     My_Quant(validate_calib=validate_calib,
                     calib_loader=instructions,
-                    calib_num=32, #32,
+                    calib_num=8, # the number has to be smaller than the number of questions in test.json
                     model=model,
                     replace_op_model=model.model,
                     W_quant_method="GPTQ", #"GPTQ", 
                     A_quant_method="None", #"Uniform", #"None", 
-                    W_MP_bit_list=[4], 
+                    W_MP_bit_list=[args.wbits],  
                     smooth_flag=False,
                     W_mp_method="R2", 
                     A_mp_method="R2", 
@@ -203,7 +216,7 @@ if __name__ == "__main__":
         model_4bit.model.layers[i].mlp.gate_proj_s_delta.data = model.model.layers[i].mlp.gate_proj.org_module.s_delta.float()
         model_4bit.model.layers[i].mlp.down_proj_s_delta.data = model.model.layers[i].mlp.down_proj.org_module.s_delta.float()
         model_4bit.model.layers[i].mlp.up_proj_s_delta.data = model.model.layers[i].mlp.up_proj.org_module.s_delta.float()
-    torch.save(model_4bit.state_dict(), "./llama_4bit/pytorch_model_4bit.pt")
+    torch.save(model_4bit.state_dict(), args.save_dir)
 
     # model_re = llama.LlamaForCausalLM(configuration)
     # model_re.load_state_dict(torch.load("/data/jinxiaocheng/LLAMA7B_9k_4bit/checkpoint-9252_4bit/pytorch_model.pt"))

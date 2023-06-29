@@ -99,9 +99,9 @@ pip install -r train/requirements.txt
 #### 数据准备
 
 训练主要使用开源数据：
-alpaca_gpt4_data.json
-alpaca_gpt4_data_zh.json
-belle数据：[belle_cn](https://huggingface.co/datasets/BelleGroup/train_2M_CN)
+alpaca_gpt4_data.json  
+alpaca_gpt4_data_zh.json  
+belle数据：[belle_cn](https://huggingface.co/datasets/BelleGroup/train_2M_CN)  
 其中belle数据使用不到一半，可适当选取。
 
 #### 模型训练
@@ -128,12 +128,12 @@ torchrun --nproc_per_node=4 --master_port=8080 train.py \
     --deepspeed "./configs/default_offload_opt_param.json" \
     --tf32 True
 
-——model_name_or_path 代表预训练模型，llama模型为hugging face格式
-——train_file 代表训练数据
-——output_dir 代表训练日志和模型保存的路径
-1，如果是单卡训练，将nproc_per_node设置为1
-2，如果运行环境不支持deepspeed，去掉--deepspeed
-本实验是在NVIDIA GeForce RTX 3090，使用deepspeed配置参数，可有效避免OOM问题。
+——model_name_or_path 代表预训练模型，llama模型为hugging face格式  
+——train_file 代表训练数据  
+——output_dir 代表训练日志和模型保存的路径  
+1，如果是单卡训练，将nproc_per_node设置为1  
+2，如果运行环境不支持deepspeed，去掉--deepspeed  
+本实验是在NVIDIA GeForce RTX 3090，使用deepspeed配置参数，可有效避免OOM问题。  
 
 ### 推理和模型分享
 

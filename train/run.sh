@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CUDA_VISIBLE_DEVICES=0,1,2,3 torchrun --nproc_per_node=4 --master_port=8080 train.py \
+torchrun --nproc_per_node=4 --master_port=8080 train.py \
     --model_name_or_path llama_to_hf_path \
     --data_path data_path \
     --bf16 True \

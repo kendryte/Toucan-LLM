@@ -88,6 +88,53 @@ ChatGLM: https://github.com/THUDM/ChatGLM-6B
 
 由上图所示， 我们提供的Toucan-7B的效果略好于ChatGLM-6B. 4 bit 量化后的模型与ChatGLM-6B 效果相当。 
 
+
+### 准备环境
+
+可以通过conda创建环境，然后pip安装需要的包, train文件下有requirements.txt可查看需要的安装包, python版本3.10
+pip install -r train/requirements.txt
+
+### 数据准备及模型训练
+
+#### 数据准备
+
+训练主要使用开源数据：
+alpaca_gpt4_data.json
+alpaca_gpt4_data_zh.json
+belle数据：[belle_cn](https://huggingface.co/datasets/BelleGroup/train_2M_CN)
+其中belle数据使用不到一半，可适当选取。
+
+#### 模型训练
+
+模型全参数微调+deepspeed, 训练启动的脚本在train/run.sh，可根据情况修改参数
+bash train/run.sh
+
+torchrun --nproc_per_node=4 --master_port=8080 train.py \
+    --model_name_or_path llama_to_hf_path \
+    --data_path data_path \
+    --bf16 True \
+    --output_dir model_save_path \
+    --num_train_epochs 2 \
+    --per_device_train_batch_size 2 \
+    --per_device_eval_batch_size 2 \
+    --gradient_accumulation_steps 4 \
+    --evaluation_strategy "no" \
+    --save_strategy "steps" \
+    --save_steps 2000 \
+    --save_total_limit 2 \
+    --learning_rate 8e-6 \
+    --weight_decay 0. \
+    --warmup_ratio 0.03 \
+    --deepspeed "./configs/default_offload_opt_param.json" \
+    --tf32 True
+
+——model_name_or_path 代表预训练模型，llama模型为hugging face格式
+——train_file 代表训练数据
+——output_dir 代表训练日志和模型保存的路径
+1，如果是单卡训练，将nproc_per_node设置为1
+2，如果运行环境不支持deepspeed，去掉--deepspeed
+本实验是在NVIDIA GeForce RTX 3090，使用deepspeed配置参数，可有效避免OOM问题。
+
 ### 推理和模型分享
 
 ```shell

@@ -99,12 +99,14 @@ pip install -r train/requirements.txt
 #### 数据准备
 
 训练主要使用开源数据：  
-alpaca_gpt4_data.json  
-alpaca_gpt4_data_zh.json  
+[alpaca_gpt4_data.json](https://github.com/kendryte/Toucan-LLM/blob/main/data/alpaca_gpt4_data.json)  
+[alpaca_gpt4_data_zh.json](https://github.com/kendryte/Toucan-LLM/blob/main/data/alpaca_gpt4_data_zh.json)  
 belle数据：[belle_cn](https://huggingface.co/datasets/BelleGroup/train_2M_CN)  
 其中belle数据使用不到一半，可适当选取。
 
 #### 模型训练
+
+原版LLaMA模型的词表大小是32K,主要针对英语进行训练，llama理解和生成中文的能力受到限制。[Chinese-LLaMA-Alpaca](https://github.com/ymcui/Chinese-LLaMA-Alpaca)在原版LLaMA的基础上进一步扩充了中文词表，并在中文语料库上进行预训练。因预训练受到资源等条件限制，我们在Chinese-LLaMA-Alpaca预训练模型的基础上继续做了相应开发工作。
 
 模型全参数微调+deepspeed, 训练启动的脚本在train/run.sh，可根据情况修改参数  
 ```

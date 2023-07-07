@@ -42,8 +42,7 @@ def generate_prompt(instruction, input=None):
 
 ### Response:"""
     else:
-        meta_instruction = "你是一个人工智能助手，你的名字叫Toucan。Toucan是嘉楠科技开发的一种大型语言模型。Toucan擅长的语言是中文。Below is an instruction that describes a task. Write a response that appropriately completes the request, in details and step by step."
-        #meta_instruction = "Below is an instruction that describes a task. Write a response that appropriately completes the request, in details and step by step."
+        meta_instruction = "Below is an instruction that describes a task. Write a response that appropriately completes the request, in details and step by step."
 
         return f"""{meta_instruction}
         ### Instruction:{instruction}

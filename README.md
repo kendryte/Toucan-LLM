@@ -159,7 +159,8 @@ python scripts/demo.py
 ```shell
 python scripts/apply_delta.py  --base /path_to_llama/llama-7b-hf --target ./save_path/toucan-7b  --delta /path_to_delta/toucan-7b-delta/
 ```
-diff-ckpt 可以在Onedrive 下载。[here](https://1drv.ms/f/s!Ar5igoMgwOq4gdowvr5NQDHOQp2OxQ?e=dzYSuE)  百度网盘下载 [这里](https://pan.baidu.com/s/15TClkCOV2RmZffey5giczA?pwd=qwer) 
+diff-ckpt 可以在Onedrive 下载 [here](https://1drv.ms/f/s!Ar5igoMgwOq4gdowvr5NQDHOQp2OxQ?e=dzYSuE)  
+百度网盘下载 [这里](https://pan.baidu.com/s/15TClkCOV2RmZffey5giczA?pwd=qwer)  
 
 
 ### 网页版 Demo

@@ -8,6 +8,9 @@
 Toucan是一个开源的、主要支持中文的对话语言模型，基于 [Meta 的 Large Language Model Meta AI (LLaMA)] 架构，具有 70 亿参数。结合模型量化技术和稀疏技术，未来可以部署在端侧进行推理。logo的设计源自免费logo设计网站https://app.logo.com/ 	
 
 
+本项目开源的内容包括全参数微调训练代码，基于[Gradio](https://gradio.app/)的推理代码，4bit量化代码及模型合并代码等。模型的权重(delta weights)可在提供的链接中下载，然后合并使用。我们提供的Toucan-7B的效果略好于ChatGLM-6B. 4 bit 量化后的模型与ChatGLM-6B 效果相当。
+
+
 本模型的开发，使用的是开源代码，开源数据集。 本项目不承担开源模型和代码导致的数据安全、舆情风险或发生任何模型被误导、滥用、传播、不当利用而产生的风险和责任。
 
 ### 客观评价方案
@@ -156,7 +159,7 @@ python scripts/demo.py
 ```shell
 python scripts/apply_delta.py  --base /path_to_llama/llama-7b-hf --target ./save_path/toucan-7b  --delta /path_to_delta/toucan-7b-delta/
 ```
-diff-ckpt 可以在Onedrive 下载。[here](https://1drv.ms/f/s!Ar5igoMgwOq4gdowvr5NQDHOQp2OxQ?e=dzYSuE) 
+diff-ckpt 可以在Onedrive 下载。[here](https://1drv.ms/f/s!Ar5igoMgwOq4gdowvr5NQDHOQp2OxQ?e=dzYSuE)  百度网盘下载 [这里](https://pan.baidu.com/s/15TClkCOV2RmZffey5giczA?pwd=qwer) 
 
 
 ### 网页版 Demo

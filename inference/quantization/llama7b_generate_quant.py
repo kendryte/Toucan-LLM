@@ -218,18 +218,3 @@ if __name__ == "__main__":
         model_4bit.model.layers[i].mlp.up_proj_s_delta.data = model.model.layers[i].mlp.up_proj.org_module.s_delta.float()
     torch.save(model_4bit.state_dict(), args.save_dir)
 
-    # model_re = llama.LlamaForCausalLM(configuration)
-    # model_re.load_state_dict(torch.load("/data/jinxiaocheng/LLAMA7B_9k_4bit/checkpoint-9252_4bit/pytorch_model.pt"))
-    # print(model_re)
-
-    # for instruction in instructions:
-    #     Response=evaluate(instruction)
-    #     print("instruction:",instruction)
-    #     print("Response:",Response)
-    #     tmp_dict = {"instruction":instruction, "input": "", "output":Response.replace("</s>","")}
-    #     res.append(tmp_dict)
-    # with open('/data/jinxiaocheng/LLAMA7B_9k/llama7b-inference/p9k-eval_W4_Only.json', 'w') as f:
-    # with open('/data/jinxiaocheng/LLAMA7B_9k/llama7b-inference/p9k-eval_W4_ATh0p980.json', 'w') as f:
-    # with open('/data/jinxiaocheng/LLAMA7B_9k/llama7b-inference/p9k-eval_W4_ATh0p995.json', 'w') as f:
-    # with open('/data/jinxiaocheng/LLAMA7B_9k/llama7b-inference/p9k-eval_W4_ATh0p998.json', 'w') as f:
-    #     json.dump(res, f, indent=4, ensure_ascii=False)

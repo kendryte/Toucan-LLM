@@ -162,7 +162,8 @@ python scripts/apply_delta.py  --base /path_to_llama/llama-7b-hf --target ./save
 diff-ckpt 可以在Onedrive 下载 [here](https://1drv.ms/f/s!Ar5igoMgwOq4gdowvr5NQDHOQp2OxQ?e=dzYSuE)  
 百度网盘下载 [这里](https://pan.baidu.com/s/15TClkCOV2RmZffey5giczA?pwd=qwer)  
 
-#### 推理显存占用   
+#### 推理显存占用  
+下图是在多次对话之后测得的显存占用情况,均在NVIDIA GeForce RTX 3090机器上推理测试。4bit模型可有效降低显存占用。   
 toucan-16bit   
 
 ![](resources/toucan-fp.pNG)   

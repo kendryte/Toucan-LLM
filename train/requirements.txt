@@ -7,3 +7,4 @@ torch==2.0.0
 sentencepiece
 tokenizers>=0.13.3
 wandb
+huggingface_hub

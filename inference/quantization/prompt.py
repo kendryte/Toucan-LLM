@@ -33,26 +33,13 @@ class instruct_prompt(prompt):
         input_ids = self.tokenizer(user_prompt)["input_ids"]
         return input_ids
 
-    def postprocess(self, text, render=True):
+    def postprocess(self, text):
         output = text.split("### Response:")[1].strip()
-        output = output.replace("Belle", "Toucan")
         if '###' in output:
             output = output.split("###")[0]
         if 'User' in output:
             output = output.split("User")[0]
         output = output.replace('�','').replace('</s>', '') 
-        if render:
-            lines = output.split("\n")
-            for i, line in enumerate(lines):
-                if "```" in line:
-                    if line != "```":
-                        lines[i] = f'<pre><code class="language-{lines[i][3:]}">'
-                    else:
-                        lines[i] = '</code></pre>'
-                else:
-                    if i > 0:
-                        lines[i] = "<br/>" + line.replace("<", "&lt;").replace(">", "&gt;").replace("__", '\_\_')
-            output =  "".join(lines)
-            # output = output.replace('<br/><pre>','\n<pre>') work for html; but not for gradio
+
         return output
 

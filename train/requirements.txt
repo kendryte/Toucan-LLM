@@ -8,3 +8,4 @@ sentencepiece
 tokenizers>=0.13.3
 wandb
 huggingface_hub
+copy

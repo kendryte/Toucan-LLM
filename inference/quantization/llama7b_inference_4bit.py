@@ -6,7 +6,8 @@ import json
 import argparse
 from transformers import LlamaTokenizer, LlamaForCausalLM, GenerationConfig
 import llama_4bit as llama
-from huggingface_hub import snapshot_download
+import prompt
+import copy
 
 
 def generate_prompt(instruction, input=None):
@@ -31,8 +32,8 @@ def generate_prompt(instruction, input=None):
 
 
 def evaluate(
-    instruction,
-    input=None,
+    inputs,
+    history=None,
     temperature=0.5,
     top_p=0.75,
     top_k=40,
@@ -41,17 +42,39 @@ def evaluate(
     max_new_tokens=1024,
     **kwargs,
 ):
-    prompt = generate_prompt(instruction, input)
-    inputs = tokenizer(prompt, return_tensors="pt")
-    input_ids = inputs["input_ids"].to(device)
+    
+    history = [] if history is None else history
+    data_point = {}
+    PROMPT = prompt.instruct_prompt(tokenizer)
+    
+    data_point['history'] = copy.deepcopy(history)
+    data_point['input'] = inputs
+
+    input_ids = PROMPT.preprocess_gen(data_point)
+    
+
+    input_ids = torch.tensor([input_ids]).to(device) 
+
+
     generation_config = GenerationConfig(
         temperature=temperature,
         top_p=top_p,
         top_k=top_k,
         num_beams=num_beams,
         repetition_penalty=repetition_penalty,
+        bos_token_id=tokenizer.bos_token_id,
+        eos_token_id=tokenizer.eos_token_id,
+        pad_token_id=tokenizer.pad_token_id,
+        max_new_tokens=max_new_tokens, 
+        bad_words_ids=tokenizer(['\n\nUser:','\n\nAssistant:'], add_special_tokens=False).input_ids,
+
         **kwargs,
     )
+
+    return_text = [(item['input'], item['output']) for item in history]
+    outputs = None
+
+
     with torch.no_grad():
         generation_output = model.generate(
             input_ids=input_ids,
@@ -62,7 +85,10 @@ def evaluate(
         )
     s = generation_output.sequences[0]
     output = tokenizer.decode(s)
-    return output.split("### Response:")[1].strip()
+    output = PROMPT.postprocess(output)
+    print("Response:",output)
+
+    return output
 
 
 if __name__ == "__main__":
@@ -77,10 +103,15 @@ if __name__ == "__main__":
 
     tokenizer = LlamaTokenizer.from_pretrained("kendryte/Toucan-llm-4bit", trust_remote_code=True)
 
-    snapshot_download(repo_id="kendryte/Toucan-llm-4bit", 
+    model_path = os.path.join(args.model,"pytorch_model_4bit.pt")
+
+    if os.path.exists(model_path):
+        pass
+    else:
+        snapshot_download(repo_id="kendryte/Toucan-llm-4bit", 
                         local_dir=args.model,
                         local_dir_use_symlinks=False)
-    model_path = os.path.join(args.model,"pytorch_model_4bit.pt")
+
 
     if torch.cuda.is_available():
         device = "cuda"
@@ -118,8 +149,14 @@ if __name__ == "__main__":
     if torch.__version__ >= "2" and sys.platform != "win32":
         model = torch.compile(model)
 
-    while True:
-        instruction = input("请输入 instruction:")
-        Response=evaluate(instruction).replace("</s>","")
-        print("Response:",Response)
+    history = []
+    return_text = [(item['input'], item['output']) for item in history]
 
+    while True:
+        inputs = input("Please Enter instruction:")
+        output= evaluate(inputs,history)
+        history.append({
+                    'input': inputs,
+                    'output': output,
+                    })
+        return_text += [(inputs, output)]

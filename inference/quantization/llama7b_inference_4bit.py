@@ -8,6 +8,7 @@ from transformers import LlamaTokenizer, LlamaForCausalLM, GenerationConfig
 import llama_4bit as llama
 import prompt
 import copy
+from huggingface_hub import snapshot_download
 
 
 def generate_prompt(instruction, input=None):

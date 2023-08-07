@@ -163,15 +163,27 @@ diff-ckpt 可以在Onedrive 下载 [here](https://1drv.ms/f/s!Ar5igoMgwOq4gdowvr
 百度网盘下载 [这里](https://pan.baidu.com/s/15TClkCOV2RmZffey5giczA?pwd=qwer)  
 
 #### 推理显存占用  
-下图是在多次对话之后测得的显存占用情况,均在NVIDIA GeForce RTX 3090机器上推理测试。4bit模型可有效降低显存占用。   
+下图是在多轮对话之后测得的显存占用情况,均在NVIDIA GeForce RTX 3090机器上推理测试。4bit模型可有效降低显存占用。   
 toucan-16bit   
+初始占用   
+![](resources/toucan-16bit-init.PNG)   
 
-![](resources/toucan-fp.pNG)   
+token长度1024 num beams=4;token长度2048会OOM;   
+![](resources/toucan-16bit-1024-b4.PNG)   
+
+token长度2048  num beams=1;   
+![](resources/toucan-16bit-2048-b1.PNG)   
 
 
 toucan-4bit   
+初始占用   
+![](resources/toucan-4bit-init.PNG)   
 
-![](resources/toucan-4bit.PNG)   
+token长度2048 num beams=4;   
+![](resources/toucan-4bit-2048-b4.PNG)   
+
+token长度2048  num beams=1;   
+![](resources/toucan-4bit-2048-b1.PNG)   
 
 
 ### 网页版 Demo

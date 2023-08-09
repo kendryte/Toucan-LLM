@@ -94,8 +94,10 @@ ChatGLM: https://github.com/THUDM/ChatGLM-6B
 
 ### 准备环境
 
-可以通过conda创建环境，然后pip安装需要的包, train文件下有requirements.txt可查看需要的安装包, python版本3.10
-pip install -r train/requirements.txt
+可以通过conda创建环境，然后pip安装需要的包, train文件下有requirements.txt可查看需要的安装包, python版本3.10   
+conda create -n Toucan python=3.10   
+然后执行下面的命令安装，建议先安装torch   
+pip install -r train/requirements.txt   
 
 ### 数据准备及模型训练
 

@@ -10,6 +10,8 @@ tokenizer = LlamaTokenizer.from_pretrained(model_path)
 LOAD_8BIT = False
 BASE_MODEL = model_path
 
+def show_img(path):
+    return Image.open(path)
 
 if torch.cuda.is_available():
     device = "cuda"

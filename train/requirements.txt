@@ -8,3 +8,6 @@ sentencepiece
 tokenizers>=0.13.3
 wandb
 huggingface_hub
+gradio==3.23.0
+mdtex2html
+accelerate
